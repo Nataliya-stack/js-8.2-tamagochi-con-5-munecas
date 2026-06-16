@@ -17,6 +17,29 @@ const btnDormir = document.getElementById('btn-dormir');
 const btnReprender = document.getElementById('btn-reprender');
 const btnAcariciar = document.getElementById('btn-acariciar');
 
+const contenedorLluvia = document.getElementById('rain-effect');
+
+// КОНСТАНТЫ АУДИО (Испанские названия файлов)
+const audioDormir = new Audio('./audio/dormir.wav');
+audioDormir.loop = true;
+
+const audioComer = new Audio('./audio/comer.wav');
+audioComer.loop = true;
+
+const audioDuchar = new Audio('./audio/duchar.wav');
+audioDuchar.loop = true;
+
+const audioJugar = new Audio('./audio/jugar.wav');
+audioJugar.loop = true;
+
+const audioAcariciar = new Audio('./audio/acariciar.wav');
+audioAcariciar.loop = true;
+
+const audioLlorar = new Audio('./audio/llorar.wav');
+audioLlorar.loop = true;
+
+const audioMorir = new Audio('./audio/morir.wav'); // Проиграется один раз при смерти
+
 const handleDuchar = () => { game.ejecutarAccion('duchar'); };
 const handleAlimentar = () => { game.ejecutarAccion('alimentar'); };
 const handleJugar = () => { game.ejecutarAccion('jugar'); };
@@ -75,19 +98,23 @@ const game = {
             game.render();
         }
     },
-
+   
     regresarAlMenu: () => {
         clearInterval(cicloVidaInterval); //таймер останавливает
         game.removerEscuchadores(); //отвязывает функции от игровых кнопок (кормить, играть), чтобы они перестали реагировать на клики.
         
-        if (mainSelectOperacion) { //сбрасывает выпадающий список выбора персонажей на дефолтную строчку «--- Elige personaje ---». (Здесь проверка if уже написана правильно!)
-            mainSelectOperacion.value = ""; 
-        }
+        if (mainSelectOperacion) mainSelectOperacion.value = "";  //сбрасывает выпадающий список выбора персонажей на дефолтную строчку «--- Elige personaje ---». (Здесь проверка if уже написана правильно!)
+        
+         // 🎵 ГЛУШИМ ВСЕ ЗВУКИ И СБРАСЫВАЕМ ВРЕМЯ
+        const всеЗвуки = [audioDormir, audioComer, audioDuchar, audioJugar, audioAcariciar, audioLlorar];
+        всеЗвуки.forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0;
+        });
 
         game.active = null; //игра «забывает» текущего питомца, очищая ячейку памяти. 
         
         //ПРЯЧЕМ ДОЖДЬ ТУТ (До вызова render!):
-        const contenedorLluvia = document.getElementById('rain-effect');
         if (contenedorLluvia) {
             contenedorLluvia.classList.add('hidden');
         }
@@ -170,7 +197,6 @@ const game = {
         }  
 
         // УПРАВЛЕНИЕ ДОЖДЕМ
-        const contenedorLluvia = document.getElementById('rain-effect');
         if (contenedorLluvia) {
             // Дождь включается СТРОГО если питомец выбран И он мертв
             if (game.active && !game.active.getEnVida()) {
@@ -178,6 +204,69 @@ const game = {
             } else {
                 // Во всех остальных случаях (питомец жив ИЛИ мы вернулись в меню) — дождь выключается!
                 contenedorLluvia.classList.add('hidden');
+            }
+        }
+
+                // 🔒 БЛОКИРОВКА КНОПОК И УПРАВЛЕНИЕ ВСЕМИ ЗВУКАМИ
+        const botonesJuego = [btnDuchar, btnAlimentar, btnJugar, btnDormir, btnReprender, btnAcariciar];
+        
+        if (game.active) {
+            // Сканируем имя картинки, чтобы понять, что делает питомец
+            const estaDurmiendo = game.active.imagen.includes('dormir');
+            const estaComiendo = game.active.imagen.includes('comer');
+            const estaEnDucha = game.active.imagen.includes('duchar');
+            const estaJugando = game.active.imagen.includes('jugar');
+            const estaAcariciando = game.active.imagen.includes('acariciar');
+            const estaLlorando = game.active.imagen.includes('llorar');
+            const estaMuerto = !game.active.getEnVida();
+
+            // 1. Блокировка кнопок (строго при смерти)
+            if (estaMuerto) {
+                botonesJuego.forEach(btn => {
+                    if (btn) btn.classList.add('opacity-40', 'pointer-events-none', 'cursor-not-allowed');
+                });
+                // Показываем дождь
+                if (contenedorLluvia) contenedorLluvia.classList.remove('hidden');
+            } else {
+                botonesJuego.forEach(btn => {
+                    if (btn) btn.classList.remove('opacity-40', 'pointer-events-none', 'cursor-not-allowed');
+                });
+                // Прячем дождь, если питомец жив
+                if (contenedorLluvia) contenedorLluvia.classList.add('hidden');
+            }
+
+            // 2. Управление плеером: включаем нужный звук, тушим все остальные
+            if (estaMuerto) {
+                audioDormir.pause(); audioComer.pause(); audioDuchar.pause(); audioJugar.pause(); audioAcariciar.pause(); audioLlorar.pause();
+                audioMorir.play(); 
+            } 
+            else if (estaDurmiendo) {
+                audioComer.pause(); audioDuchar.pause(); audioJugar.pause(); audioAcariciar.pause(); audioLlorar.pause();
+                audioDormir.play();
+            } 
+            else if (estaComiendo) {
+                audioDormir.pause(); audioDuchar.pause(); audioJugar.pause(); audioAcariciar.pause(); audioLlorar.pause();
+                audioComer.play();
+            } 
+            else if (estaEnDucha) {
+                audioDormir.pause(); audioComer.pause(); audioJugar.force = true; audioJugar.pause(); audioAcariciar.pause(); audioLlorar.pause();
+                audioDuchar.play();
+            } 
+            else if (estaJugando) {
+                audioDormir.pause(); audioComer.pause(); audioDuchar.pause(); audioAcariciar.pause(); audioLlorar.pause();
+                audioJugar.play();
+            } 
+            else if (estaAcariciando) {
+                audioDormir.pause(); audioComer.pause(); audioDuchar.pause(); audioJugar.pause(); audioLlorar.pause();
+                audioAcariciar.play();
+            } 
+            else if (estaLlorando) {
+                audioDormir.pause(); audioComer.pause(); audioDuchar.pause(); audioJugar.pause(); audioAcariciar.pause();
+                audioLlorar.play();
+            } 
+            else {
+                // Если питомец в нейтральном состоянии — полная тишина
+                audioDormir.pause(); audioComer.pause(); audioDuchar.pause(); audioJugar.pause(); audioAcariciar.pause(); audioLlorar.pause();
             }
         }
     },

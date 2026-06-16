@@ -93,7 +93,7 @@ class Tamagotchi {
     }
 
     comprobarVida() {
-        if (this.#salud === 0 || this.#energia === 0 || this.#felicidad === 0 || this.#limpieza === 0) {
+        if (this.#salud === 0 && this.#energia === 0) {
             this.#enVida = false;
             const encontradaMuerto = this.arrayImagenes.find(img => img.accion === 'muere' || img.accion === 'morir');
             if (encontradaMuerto) {
