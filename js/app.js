@@ -84,7 +84,13 @@ const game = {
             mainSelectOperacion.value = ""; 
         }
 
-        game.active = null; //игра «забывает» текущего питомца, очищая ячейку памяти.         
+        game.active = null; //игра «забывает» текущего питомца, очищая ячейку памяти. 
+        
+        //ПРЯЧЕМ ДОЖДЬ ТУТ (До вызова render!):
+        const contenedorLluvia = document.getElementById('rain-effect');
+        if (contenedorLluvia) {
+            contenedorLluvia.classList.add('hidden');
+        }
         game.render(); 
     },
 
@@ -162,8 +168,20 @@ const game = {
             </div>
         `).join('');  
         }  
-    },
 
+        // УПРАВЛЕНИЕ ДОЖДЕМ
+        const contenedorLluvia = document.getElementById('rain-effect');
+        if (contenedorLluvia) {
+            // Дождь включается СТРОГО если питомец выбран И он мертв
+            if (game.active && !game.active.getEnVida()) {
+                contenedorLluvia.classList.remove('hidden');
+            } else {
+                // Во всех остальных случаях (питомец жив ИЛИ мы вернулись в меню) — дождь выключается!
+                contenedorLluvia.classList.add('hidden');
+            }
+        }
+    },
+    
     detenerJuego: () => {
         clearInterval(cicloVidaInterval); //остановить таймер
         game.removerEscuchadores(); //отключить слушателей

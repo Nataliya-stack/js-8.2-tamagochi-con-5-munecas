@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Fontdiner+Swanky&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
        
@@ -26,8 +27,24 @@
     <div id="game-card-root" class="game-card bg-slate-900/80 backdrop-blur-xl border-4 border-fuchsia-500 shadow-[0_0_40px_rgba(217,70,239,0.4)] w-full max-w-xl sm:max-h-[95vh] sm:rounded-3xl rounded-2xl flex flex-col p-5 sm:p-6 transition-all duration-300">
     
         <div class="flex flex-col items-center text-center border-b-2 border-slate-700/50 pb-3 mb-3 shrink-0">
-            <div id="avatar-container" class="flex items-center justify-center w-44 h-44 sm:w-60 sm:h-60 mb-2 animated-pet shrink-0">
-                <img id="pet-avatar" src="./img/start.jpg" alt="Tamagotchi" class="max-w-full max-h-full object-contain rounded-2xl drop-shadow-[0_10px_20px_rgba(255,255,255,0.15)]">
+            <div id="avatar-container" class="relative flex items-center justify-center w-44 h-44 sm:w-60 sm:h-60 mb-2 animated-pet shrink-0">
+                <img id="pet-avatar" src="./img/start.jpg" alt="Tamagotchi" class="max-w-full max-h-full object-contain rounded-2xl drop-shadow-[0_10px_20px_rgba(255,255,255,0.15)]">               
+                <div id="rain-effect" class="hidden absolute top-0 left-0 w-44 h-44 sm:w-60 sm:h-60 bg-slate-950/40 backdrop-blur-[0.5px] z-10 pointer-events-none overflow-hidden rounded-2xl">
+                   <div class="drop" style="height: 35px; left: 5%;  animation-duration: 0.45s; animation-delay: 0s;"></div>
+                   <div class="drop" style="height: 45px; left: 12%; animation-duration: 0.55s; animation-delay: 0.2s;"></div>
+                   <div class="drop" style="height: 30px; left: 20%; animation-duration: 0.4s;  animation-delay: 0.1s;"></div>
+                   <div class="drop" style="height: 40px; left: 28%; animation-duration: 0.5s;  animation-delay: 0.3s;"></div>
+                   <div class="drop" style="height: 32px; left: 35%; animation-duration: 0.42s; animation-delay: 0.05s;"></div>
+                   <div class="drop" style="height: 48px; left: 43%; animation-duration: 0.58s; animation-delay: 0.25s;"></div>
+                   <div class="drop" style="height: 30px; left: 50%; animation-duration: 0.38s; animation-delay: 0.15s;"></div>
+                   <div class="drop" style="height: 42px; left: 58%; animation-duration: 0.52s; animation-delay: 0.35s;"></div>
+                   <div class="drop" style="height: 36px; left: 66%; animation-duration: 0.44s; animation-delay: 0.12s;"></div>
+                   <div class="drop" style="height: 46px; left: 73%; animation-duration: 0.56s; animation-delay: 0.28s;"></div>
+                   <div class="drop" style="height: 34px; left: 80%; animation-duration: 0.46s; animation-delay: 0.02s;"></div>
+                   <div class="drop" style="height: 44px; left: 87%; animation-duration: 0.54s; animation-delay: 0.22s;"></div>
+                   <div class="drop" style="height: 32px; left: 93%; animation-duration: 0.41s; animation-delay: 0.18s;"></div>
+                   <div class="drop" style="height: 40px; left: 98%; animation-duration: 0.48s; animation-delay: 0.32s;"></div>
+                </div>
             </div>     
 
             <div class="w-full shrink-0">
