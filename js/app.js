@@ -19,27 +19,6 @@ const btnAcariciar = document.getElementById('btn-acariciar');
 
 const contenedorLluvia = document.getElementById('rain-effect');
 
-// КОНСТАНТЫ АУДИО (Испанские названия файлов)
-const audioDormir = new Audio('./audio/dormir.wav');
-audioDormir.loop = true;
-
-const audioComer = new Audio('./audio/comer.wav');
-audioComer.loop = true;
-
-const audioDuchar = new Audio('./audio/duchar.wav');
-audioDuchar.loop = true;
-
-const audioJugar = new Audio('./audio/jugar.wav');
-audioJugar.loop = true;
-
-const audioAcariciar = new Audio('./audio/acariciar.wav');
-audioAcariciar.loop = true;
-
-const audioLlorar = new Audio('./audio/llorar.wav');
-audioLlorar.loop = true;
-
-const audioMorir = new Audio('./audio/morir.wav'); // Проиграется один раз при смерти
-
 const handleDuchar = () => { game.ejecutarAccion('duchar'); };
 const handleAlimentar = () => { game.ejecutarAccion('alimentar'); };
 const handleJugar = () => { game.ejecutarAccion('jugar'); };
@@ -100,22 +79,19 @@ const game = {
     },
    
     regresarAlMenu: () => {
-        clearInterval(cicloVidaInterval); //таймер останавливает
-        game.removerEscuchadores(); //отвязывает функции от игровых кнопок (кормить, играть), чтобы они перестали реагировать на клики.
+        clearInterval(cicloVidaInterval); // таймер останавливает
+        game.removerEscuchadores(); // отвязывает функции от игровых кнопок (кормить, играть), чтобы они перестали реагировать на клики.
         
-        if (mainSelectOperacion) mainSelectOperacion.value = "";  //сбрасывает выпадающий список выбора персонажей на дефолтную строчку «--- Elige personaje ---». (Здесь проверка if уже написана правильно!)
+        if (mainSelectOperacion) mainSelectOperacion.value = "";  // сбрасывает выпадающий список выбора персонажей на дефолтную строчку «--- Elige personaje ---». (Здесь проверка if уже написана правильно!)
         
-         // 🎵 ГЛУШИМ ВСЕ ЗВУКИ И СБРАСЫВАЕМ ВРЕМЯ
-        const всеЗвуки = [audioDormir, audioComer, audioDuchar, audioJugar, audioAcariciar, audioLlorar];
-        всеЗвуки.forEach(audio => {
-            audio.pause();
-            audio.currentTime = 0;
+        Object.values(sonidosJuego).forEach(audio => { 
+            audio.pause(); // мгновенно жмет кнопку пауза на абсолютно каждом плеере в игре
+            audio.currentTime = 0; // перематывает каждый трек на самую первую секунду, гарантируя полную тишину в меню
         });
 
-        game.active = null; //игра «забывает» текущего питомца, очищая ячейку памяти. 
-        
-        //ПРЯЧЕМ ДОЖДЬ ТУТ (До вызова render!):
-        if (contenedorLluvia) {
+        game.active = null; // игра забывает текущего питомца, очищая ячейку памяти. 
+               
+        if (contenedorLluvia) {  // прячем дождь (до вызова render!):
             contenedorLluvia.classList.add('hidden');
         }
         game.render(); 
@@ -132,31 +108,31 @@ const game = {
     },
 
     render: () => {    
-        // СЦЕНАРИЙ 1: Главный экран (Питомец НЕ выбран)
+        // 1. Главный экран (питомец не выбран)
         if (game.active === null) {
             if (avatarImg) avatarImg.src = NEUTRAL_AVATAR; 
             if (nameEl) nameEl.innerText = "¡Quieres jugar!";             
             
             if (descEl) {
-              descEl.classList.add('hidden'); // Прячет текстовое описание
+              descEl.classList.add('hidden'); // прячет текстовое описание
               descEl.classList.remove('block');
               descEl.innerText = ""; //это «чистка памяти». Автор полностью стирает текст внутри тега, чтобы старое описание (например, Пико) случайно не мелькнуло на долю секунды, когда вы в следующий раз выберете Минни.
             }
 
             if (container) {
-            container.classList.add('hidden'); // Прячет блок со шкалами (солнышками)
+            container.classList.add('hidden'); // прячет блок со шкалами (солнышками)
             container.classList.remove('block', 'py-0.5');
             }
             
-            if (btnChangePet) btnChangePet.classList.add('hidden'); // Прячет кнопку "Сменить питомца"
-            if (actionsPanel) actionsPanel.classList.add('hidden'); // Прячет панель с кнопками действий
+            if (btnChangePet) btnChangePet.classList.add('hidden'); // прячет кнопку "Сменить питомца"
+            if (actionsPanel) actionsPanel.classList.add('hidden'); // прячет панель с кнопками действий
             
-            if (selectionContainer) selectionContainer.classList.remove('hidden'); // Показывает выпадающий список выбора
+            if (selectionContainer) selectionContainer.classList.remove('hidden'); // показывает выпадающий список выбора
             return; 
         }
 
-        // СЦЕНАРИЙ 2: Игровой процесс (Питомец выбран)
-        if (selectionContainer) selectionContainer.classList.add('hidden'); // Прячет меню выбора
+        // 2: Игровой процесс (Питомец выбран)
+        if (selectionContainer) selectionContainer.classList.add('hidden'); // прячет меню выбора
         
         if (container) {
            container.classList.remove('hidden'); // Показывает блок характеристик
@@ -182,8 +158,8 @@ const game = {
         `;
         }
 
-        if (avatarImg) avatarImg.src = game.active.imagen; // Берет текущую картинку утенка (например, если он ест — будет картинка еды)           
-        if (nameEl) nameEl.innerText = game.active.nombre; // Выводит имя питомца (Pico или Minnie)
+        if (avatarImg) avatarImg.src = game.active.imagen; // берет текущую картинку утенка (например, если он ест — будет картинка еды)           
+        if (nameEl) nameEl.innerText = game.active.nombre; // выводит имя питомца (Pico или Minnie)
 
         if (container) {
         container.innerHTML = stats.map(s => `
@@ -196,89 +172,51 @@ const game = {
         `).join('');  
         }  
 
-        // УПРАВЛЕНИЕ ДОЖДЕМ
-        if (contenedorLluvia) {
-            // Дождь включается СТРОГО если питомец выбран И он мертв
-            if (game.active && !game.active.getEnVida()) {
-                contenedorLluvia.classList.remove('hidden');
-            } else {
-                // Во всех остальных случаях (питомец жив ИЛИ мы вернулись в меню) — дождь выключается!
-                contenedorLluvia.classList.add('hidden');
-            }
-        }
-
-                // 🔒 БЛОКИРОВКА КНОПОК И УПРАВЛЕНИЕ ВСЕМИ ЗВУКАМИ
+        //Блокировка кнопок и управление звуками
         const botonesJuego = [btnDuchar, btnAlimentar, btnJugar, btnDormir, btnReprender, btnAcariciar];
         
-        if (game.active) {
-            // Сканируем имя картинки, чтобы понять, что делает питомец
-            const estaDurmiendo = game.active.imagen.includes('dormir');
-            const estaComiendo = game.active.imagen.includes('comer');
-            const estaEnDucha = game.active.imagen.includes('duchar');
-            const estaJugando = game.active.imagen.includes('jugar');
-            const estaAcariciando = game.active.imagen.includes('acariciar');
-            const estaLlorando = game.active.imagen.includes('llorar');
-            const estaMuerto = !game.active.getEnVida();
+        if (game.active) { 
+            const estaMuerto = !game.active.getEnVida(); 
 
-            // 1. Блокировка кнопок (строго при смерти)
-            if (estaMuerto) {
-                botonesJuego.forEach(btn => {
-                    if (btn) btn.classList.add('opacity-40', 'pointer-events-none', 'cursor-not-allowed');
-                });
-                // Показываем дождь
-                if (contenedorLluvia) contenedorLluvia.classList.remove('hidden');
+            // 1. Блокировка кнопок и дождь (одной строчкой через toggle)
+            botonesJuego.forEach(btn => { 
+                if (btn) {
+                    btn.disabled = estaMuerto; // для Самсунга
+                    btn.classList.toggle('opacity-40', estaMuerto); // включает opacity, то есть делает блеклыми кнопки и параллельно проверяет на if else, это можно понять по второму слову estaMuerto
+                    btn.classList.toggle('pointer-events-none', estaMuerto); // не даст нажать
+                    btn.classList.toggle('cursor-not-allowed', estaMuerto); // делает курсор в виде кружочка перечеркнутого
+                }
+            });
+
+            if (contenedorLluvia) contenedorLluvia.classList.toggle('hidden', !estaMuerto); // включаем дождь капли 
+
+            // 2. Автоматический плеер
+            if (estaMuerto) {   // Если питомец мёртв — из нашей базы sonidosJuego мы точечно достаём плеер по ключу .morir и запускаем трек смерти.
+                Object.values(sonidosJuego).forEach(audio => audio.pause()); // превращает наш объект со звуками в массив физических плееров Audio. Цикл .forEach() мгновенно жмёт кнопку Пауза на абсолютно каждом плеере в игре. Это нужно, чтобы при смене состояния старый звук (например, душа) не продолжал орать одновременно с новым звуком (например, еды), ставит на паузу все звуки
+                sonidosJuego.morir.play(); //включаем звук 
             } else {
-                botonesJuego.forEach(btn => {
-                    if (btn) btn.classList.remove('opacity-40', 'pointer-events-none', 'cursor-not-allowed');
+                Object.entries(sonidosJuego).forEach(([nombre, audio]) => { 
+                    if (game.active.imagen.includes(nombre)) audio.play(); // Включаем или выключаем звук в зависимости от картинки
+                    else audio.pause();
                 });
-                // Прячем дождь, если питомец жив
-                if (contenedorLluvia) contenedorLluvia.classList.add('hidden');
-            }
-
-            // 2. Управление плеером: включаем нужный звук, тушим все остальные
-            if (estaMuerto) {
-                audioDormir.pause(); audioComer.pause(); audioDuchar.pause(); audioJugar.pause(); audioAcariciar.pause(); audioLlorar.pause();
-                audioMorir.play(); 
-            } 
-            else if (estaDurmiendo) {
-                audioComer.pause(); audioDuchar.pause(); audioJugar.pause(); audioAcariciar.pause(); audioLlorar.pause();
-                audioDormir.play();
-            } 
-            else if (estaComiendo) {
-                audioDormir.pause(); audioDuchar.pause(); audioJugar.pause(); audioAcariciar.pause(); audioLlorar.pause();
-                audioComer.play();
-            } 
-            else if (estaEnDucha) {
-                audioDormir.pause(); audioComer.pause(); audioJugar.force = true; audioJugar.pause(); audioAcariciar.pause(); audioLlorar.pause();
-                audioDuchar.play();
-            } 
-            else if (estaJugando) {
-                audioDormir.pause(); audioComer.pause(); audioDuchar.pause(); audioAcariciar.pause(); audioLlorar.pause();
-                audioJugar.play();
-            } 
-            else if (estaAcariciando) {
-                audioDormir.pause(); audioComer.pause(); audioDuchar.pause(); audioJugar.pause(); audioLlorar.pause();
-                audioAcariciar.play();
-            } 
-            else if (estaLlorando) {
-                audioDormir.pause(); audioComer.pause(); audioDuchar.pause(); audioJugar.pause(); audioAcariciar.pause();
-                audioLlorar.play();
-            } 
-            else {
-                // Если питомец в нейтральном состоянии — полная тишина
-                audioDormir.pause(); audioComer.pause(); audioDuchar.pause(); audioJugar.pause(); audioAcariciar.pause(); audioLlorar.pause();
             }
         }
-    },
-    
-    detenerJuego: () => {
-        clearInterval(cicloVidaInterval); //остановить таймер
-        game.removerEscuchadores(); //отключить слушателей
-        game.render(); //перерисовать экран на умершего тамагочи
-        if (actionsPanel) actionsPanel.classList.add('hidden'); // спрятать панель с кнопками
+    }, 
+
+        detenerJuego: () => {
+        clearInterval(cicloVidaInterval); // останавливает главный таймер жизни
+        game.removerEscuchadores(); // отвязывает клики от игровых кнопок, отключить слушателей
+        
+        game.render(); // здесь мгновенно срабатывает render(): кнопки блекнут, включается гром и ливень
+        
+        if (actionsPanel) { // панель с кнопками скроется с экрана через 3 секунды
+            setTimeout(() => {
+                actionsPanel.classList.add('hidden'); // полностью стирает панель с экрана
+            }, 3000); // через 3000 миллисекунд = 3 секунды
+        }
         
         if (descEl) {
-        descEl.innerText = `¡${game.active.nombre} ha muerto!`;
+            descEl.innerText = `¡${game.active.nombre} ha muerto!`; // выводит прощальный текст
         }
     },
 

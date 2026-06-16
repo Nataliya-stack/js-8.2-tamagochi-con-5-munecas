@@ -70,4 +70,22 @@ const tamagotchis = [
             new Accion('muere', 'sinto_morir.jpg')  
         ]),  
 ];
+
+const sonidosJuego = {
+    dormir: new Audio('./audio/dormir.wav'),
+    comer: new Audio('./audio/comer.wav'),
+    duchar: new Audio('./audio/duchar.wav'),
+    jugar: new Audio('./audio/jugar.wav'),
+    acariciar: new Audio('./audio/acariciar.wav'),
+    llorar: new Audio('./audio/llorar.wav'),
+    morir: new Audio('./audio/morir.wav')
+};
+
+//Автоматически включаем зацикливание всем звукам, кроме смерти
+Object.keys(sonidosJuego).forEach(accion => {
+    if (accion !== 'morir') {
+        sonidosJuego[accion].loop = true;
+    }
+});
+
     
